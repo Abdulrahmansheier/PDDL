@@ -1,47 +1,70 @@
-;Header and description
 
-(define (domain doungen)
 
-;remove requirements that are not needed
-(:requirements :typing)
+(define (domain domain1)
 
+
+(:requirements:typing)
   (:types         
-    room locatable - object
-		hero monster - locatable
+    room  sword  - object
+    movable - object
+    hero monster - movable
   )
 
 
-; un-comment following line if constants are needed
-;(:constants )
+
 
 (:predicates ;todo: define predicates here
-(on ?hero - hero ?room1 - room)
-(path ?room1 - room ?room2 - room ?room3 - room ?room4 - room ?room5 - room ?room6 - room)
+(on ?h - movable ?room1 - room)
+(path ?r1 - room ?r2 - room)
+(live ?h - hero)
+; (vacant ?r - room) ;empty room
+(destroy ?r - room)
+
 )
 
 
-(:functions ;todo: define numeric functions here
-)
 
-;define actions here
   (:action move
     :parameters
-     (?hero - hero
+     (?h - hero
       ?from - room
-      ?to - room)
+      ?to - room
+      )
     :precondition
      (and 
-      (on ?hero ?from) 
+      (on ?h ?from) 
       (path ?from ?to)
+      (live ?h)
      )
     :effect
      (and 
-      (not (on ?hero ?from))
-      (on ?hero ?to)
+      (not (on ?h ?from))
+      (on ?h ?to)
+      (destroy ?from)
      )
   )
-
-
+  (:action move_monster
+    :parameters
+     (?h - hero
+      ?m - monster
+      ?from - room
+      ?to - room
+      )
+    :precondition
+    (and 
+      (on ?h ?from)
+      (on ?m ?to) 
+      (path ?from ?to)
+      ;(sword ?h)
+      ;(fixed ?from)
+      (live ?h)
+      (not (destroy ?to))
+      
+     )
+    :effect
+     (and 
+      (not (live ?h))
+     )
+    )
+  
 )
-
-
