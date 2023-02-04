@@ -1,13 +1,11 @@
-
-
 (define (domain domain1)
 
 
-(:requirements:typing)
+(:requirements:typing :negative-preconditions)
   (:types         
-    room  sword  - object
+    room    - object
     movable - object
-    hero monster - movable
+    hero monster sword - movable
   )
 
 
@@ -17,8 +15,10 @@
 (on ?h - movable ?room1 - room)
 (path ?r1 - room ?r2 - room)
 (live ?h - hero)
-; (vacant ?r - room) ;empty room
+(vacant ?r - room) ;empty room
 (destroy ?r - room)
+(hassword ?h - hero)
+
 
 )
 
@@ -35,6 +35,8 @@
       (on ?h ?from) 
       (path ?from ?to)
       (live ?h)
+      (not (destroy ?to))
+      (vacant ?to)
      )
     :effect
      (and 
@@ -55,16 +57,62 @@
       (on ?h ?from)
       (on ?m ?to) 
       (path ?from ?to)
-      ;(sword ?h)
-      ;(fixed ?from)
+      (hassword ?h)
       (live ?h)
       (not (destroy ?to))
+
+
       
      )
     :effect
      (and 
-      (not (live ?h))
+      (not (on ?h ?from))
+      (on ?h ?to)
+      (destroy ?from)
      )
     )
-  
+
+    (:action pickup_sword
+    :parameters
+     (?h - hero
+      ?to - room
+      ?s - sword
+      )
+    :precondition
+    (and 
+      (on ?h ?to)
+      (on ?s ?to)
+      (not (hassword ?h))
+
+     )
+    :effect
+     (and 
+      (hassword ?h)
+      
+     )
+
+    )
+    (:action move_sword
+    :parameters
+     (?h - hero
+      ?from - room
+      ?to - room
+      ?s - sword
+      )
+    :precondition
+     (and 
+      (on ?h ?from) 
+      (path ?from ?to)
+      (on ?s ?to)
+      (not (destroy ?to))
+
+     )
+    :effect
+     (and 
+      (not (on ?h ?from))
+      (on ?h ?to)
+      (destroy ?from)
+     )
+  )
+
 )
